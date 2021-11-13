@@ -14,17 +14,25 @@ public class ParseFile {
         this.file = file;
     }
 
-    public synchronized String getContent(Predicate<Character> filter) throws IOException {
+    public synchronized String getAllContent() throws IOException {
+        return getContent(c -> true);
+    }
+
+    public synchronized String getContentWithoutUnicode() throws IOException {
+        return getContent(c -> c < 0x80);
+    }
+
+    private String getContent(Predicate<Character> filter) throws IOException {
         try (InputStream in = new BufferedInputStream(new FileInputStream(file))) {
-            String output = "";
+            StringBuilder output = new StringBuilder();
             int data;
-            while ((data = in.read()) > 0) {
+            while ((data = in.read()) != -1) {
                 char dataChar = (char) data;
                 if (filter.test(dataChar)) {
-                    output += dataChar;
+                    output.append(dataChar);
                 }
             }
-            return output;
+            return output.toString();
         }
     }
 }
