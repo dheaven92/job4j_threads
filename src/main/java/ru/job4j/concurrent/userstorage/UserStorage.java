@@ -16,14 +16,8 @@ public class UserStorage implements Storage<User>, Transfer {
     }
 
     @Override
-    public synchronized boolean update(User updatedUser) {
-        User oldUser = storage.get(updatedUser.getId());
-        if (oldUser != null) {
-            oldUser.setAmount(updatedUser.getAmount());
-            storage.put(oldUser.getId(), oldUser);
-            return true;
-        }
-        return false;
+    public synchronized boolean update(User user) {
+        return storage.replace(user.getId(), user) != null;
     }
 
     @Override
@@ -35,7 +29,12 @@ public class UserStorage implements Storage<User>, Transfer {
     public synchronized void transfer(int fromId, int toId, int amount) {
         User userFrom = storage.get(fromId);
         User userTo = storage.get(toId);
-        update(new User(userFrom.getId(), userFrom.getAmount() - amount));
-        update(new User(userTo.getId(), userTo.getAmount() + amount));
+        if (userFrom != null && userTo != null) {
+            int userFromAmountUpdated = userFrom.getAmount() - amount;
+            if (userFromAmountUpdated >= 0) {
+                userFrom.setAmount(userFromAmountUpdated);
+                userTo.setAmount(userTo.getAmount() + amount);
+            }
+        }
     }
 }
