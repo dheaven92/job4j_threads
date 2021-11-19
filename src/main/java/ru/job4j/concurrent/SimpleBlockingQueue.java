@@ -39,8 +39,8 @@ public class SimpleBlockingQueue<E> {
         }
     }
 
-    public synchronized Queue<E> getQueue() {
-        return new LinkedList<>(queue);
+    public synchronized int size() {
+        return queue.size();
     }
 
     public synchronized boolean isEmpty() {

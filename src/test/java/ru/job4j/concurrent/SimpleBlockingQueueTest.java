@@ -75,7 +75,7 @@ public class SimpleBlockingQueueTest {
         producer.start();
         consumer.join();
         producer.join();
-        assertEquals(List.of(2, 3), queue.getQueue());
+        assertEquals(2, queue.size());
     }
 
     private class Consumer implements Runnable {
