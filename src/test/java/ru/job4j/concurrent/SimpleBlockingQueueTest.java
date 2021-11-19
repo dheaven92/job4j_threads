@@ -1,6 +1,5 @@
 package ru.job4j.concurrent;
 
-import org.junit.Before;
 import org.junit.Test;
 
 import java.util.List;
@@ -13,21 +12,14 @@ import static org.junit.Assert.assertThat;
 
 public class SimpleBlockingQueueTest {
 
-    private CopyOnWriteArrayList<Integer> buffer;
-    private SimpleBlockingQueue<Integer> queue;
-
-    @Before
-    public void init() {
-        this.buffer = new CopyOnWriteArrayList<>();
-        this.queue = new SimpleBlockingQueue<>(10);
-    }
-
     @Test
     public void whenMultipleConsumersAndOneProducer() throws InterruptedException {
-        Thread producer = new Thread(new Producer());
+        CopyOnWriteArrayList<Integer> buffer = new CopyOnWriteArrayList<>();
+        SimpleBlockingQueue<Integer> queue = new SimpleBlockingQueue<>(10);
+        Thread producer = new Thread(new Producer(queue));
         producer.start();
-        Thread consumer1 = new Thread(new Consumer());
-        Thread consumer2 = new Thread(new Consumer());
+        Thread consumer1 = new Thread(new Consumer(buffer, queue));
+        Thread consumer2 = new Thread(new Consumer(buffer, queue));
         consumer1.start();
         consumer2.start();
         producer.join();
@@ -40,9 +32,11 @@ public class SimpleBlockingQueueTest {
 
     @Test
     public void whenFetchAllThenGetIt() throws InterruptedException {
-        Thread producer = new Thread(new Producer());
+        CopyOnWriteArrayList<Integer> buffer = new CopyOnWriteArrayList<>();
+        SimpleBlockingQueue<Integer> queue = new SimpleBlockingQueue<>(10);
+        Thread producer = new Thread(new Producer(queue));
         producer.start();
-        Thread consumer = new Thread(new Consumer());
+        Thread consumer = new Thread(new Consumer(buffer, queue));
         consumer.start();
         producer.join();
         consumer.interrupt();
@@ -78,7 +72,14 @@ public class SimpleBlockingQueueTest {
         assertEquals(2, queue.size());
     }
 
-    private class Consumer implements Runnable {
+    private static class Consumer implements Runnable {
+        private final CopyOnWriteArrayList<Integer> buffer;
+        private final SimpleBlockingQueue<Integer> queue;
+
+        private Consumer(CopyOnWriteArrayList<Integer> buffer, SimpleBlockingQueue<Integer> queue) {
+            this.buffer = buffer;
+            this.queue = queue;
+        }
 
         @Override
         public void run() {
@@ -93,7 +94,12 @@ public class SimpleBlockingQueueTest {
         }
     }
 
-    private class Producer implements Runnable {
+    private static class Producer implements Runnable {
+        private final SimpleBlockingQueue<Integer> queue;
+
+        private Producer(SimpleBlockingQueue<Integer> queue) {
+            this.queue = queue;
+        }
 
         @Override
         public void run() {
