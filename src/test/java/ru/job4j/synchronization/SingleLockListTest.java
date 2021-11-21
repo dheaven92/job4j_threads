@@ -1,6 +1,5 @@
 package ru.job4j.synchronization;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -46,7 +45,6 @@ public class SingleLockListTest {
         assertThat(list.get(0), is(1));
     }
 
-    @Ignore
     @Test
     public void iterator() throws InterruptedException {
         SingleLockList<Integer> list = new SingleLockList<>(new ArrayList<>());
