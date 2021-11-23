@@ -2,8 +2,6 @@ package ru.job4j.threadpool;
 
 import org.junit.Test;
 
-import java.util.concurrent.ForkJoinPool;
-
 import static org.junit.Assert.assertEquals;
 
 public class ParallelFindIndexTest {
@@ -34,10 +32,8 @@ public class ParallelFindIndexTest {
                 "harass",
                 "coal"
         };
-        ParallelFindIndex<String> parallelFindIndex
-                = new ParallelFindIndex<>(arr, "spring", 0, arr.length);
-        ForkJoinPool forkJoinPool = new ForkJoinPool();
-        assertEquals(Integer.valueOf(16), forkJoinPool.invoke(parallelFindIndex));
+        ParallelFindIndex<String> parallelFindIndex = new ParallelFindIndex<>(arr, "spring", 0, arr.length);
+        assertEquals(16, parallelFindIndex.findIndex());
     }
 
     @Test
@@ -51,9 +47,7 @@ public class ParallelFindIndexTest {
                 "sample",
                 "prove"
         };
-        ParallelFindIndex<String> parallelFindIndex
-                = new ParallelFindIndex<>(arr, "spring", 0, arr.length);
-        ForkJoinPool forkJoinPool = new ForkJoinPool();
-        assertEquals(Integer.valueOf(-1), forkJoinPool.invoke(parallelFindIndex));
+        ParallelFindIndex<String> parallelFindIndex = new ParallelFindIndex<>(arr, "spring", 0, arr.length);
+        assertEquals(-1, parallelFindIndex.findIndex());
     }
 }
