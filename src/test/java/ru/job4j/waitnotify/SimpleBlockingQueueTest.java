@@ -19,13 +19,13 @@ public class SimpleBlockingQueueTest {
         SimpleBlockingQueue<Integer> queue = new SimpleBlockingQueue<>(10);
         Thread producer = new Thread(new Producer(queue));
         producer.start();
+        producer.join();
         Thread consumer1 = new Thread(new Consumer(buffer, queue));
         Thread consumer2 = new Thread(new Consumer(buffer, queue));
         consumer1.start();
-        consumer2.start();
-        producer.join();
         consumer1.interrupt();
         consumer1.join();
+        consumer2.start();
         consumer2.interrupt();
         consumer2.join();
         assertThat(buffer, is(List.of(0, 1, 2, 3, 4)));
