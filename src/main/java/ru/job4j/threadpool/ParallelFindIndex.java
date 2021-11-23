@@ -28,7 +28,7 @@ public class ParallelFindIndex<T> extends RecursiveTask<Integer> {
         }
         int mid = (start + end) / 2;
         ParallelFindIndex<T> leftFind = new ParallelFindIndex<>(arr, key, start, mid);
-        ParallelFindIndex<T> rightFind = new ParallelFindIndex<>(arr, key, mid + 1, end);
+        ParallelFindIndex<T> rightFind = new ParallelFindIndex<>(arr, key, mid, end);
         leftFind.fork();
         rightFind.fork();
         int leftIndex = leftFind.join();
