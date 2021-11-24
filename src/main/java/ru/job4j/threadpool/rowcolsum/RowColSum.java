@@ -10,13 +10,7 @@ public class RowColSum {
     public static Sums[] sum(int[][] matrix) {
         Sums[] sums = new Sums[matrix.length];
         for (int i = 0; i < matrix.length; i++) {
-            int rowSum = 0;
-            int colSum = 0;
-            for (int j = 0; j < matrix.length; j++) {
-                rowSum += matrix[i][j];
-                colSum += matrix[j][i];
-            }
-            sums[i] = new Sums(rowSum, colSum);
+            sums[i] = sum(matrix, i);
         }
         return sums;
     }
@@ -34,14 +28,16 @@ public class RowColSum {
     }
 
     public static CompletableFuture<Sums> getTask(int[][] matrix, int i) {
-        return CompletableFuture.supplyAsync(() -> {
-            int rowSum = 0;
-            int colSum = 0;
-            for (int j = 0; j < matrix.length; j++) {
-                rowSum += matrix[i][j];
-                colSum += matrix[j][i];
-            }
-            return new Sums(rowSum, colSum);
-        });
+        return CompletableFuture.supplyAsync(() -> sum(matrix, i));
+    }
+
+    private static Sums sum(int[][] matrix, int i) {
+        int rowSum = 0;
+        int colSum = 0;
+        for (int j = 0; j < matrix.length; j++) {
+            rowSum += matrix[i][j];
+            colSum += matrix[j][i];
+        }
+        return new Sums(rowSum, colSum);
     }
 }
