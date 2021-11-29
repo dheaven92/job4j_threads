@@ -1,12 +1,12 @@
 package ru.job4j.synchronization;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.concurrent.CountDownLatch;
 
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
@@ -46,20 +46,30 @@ public class SingleLockListTest {
         assertThat(list.get(0), is(1));
     }
 
-    @Ignore
     @Test
     public void iterator() throws InterruptedException {
         SingleLockList<Integer> list = new SingleLockList<>(new ArrayList<>());
-        Thread first = new Thread(() -> list.add(1));
-        Thread second = new Thread(() -> list.add(2));
+        CountDownLatch latch = new CountDownLatch(3);
+        Thread first = new Thread(() -> {
+            list.add(1);
+            latch.countDown();
+        });
+        Thread second = new Thread(() -> {
+            list.add(2);
+            latch.countDown();
+        });
         first.start();
         first.join();
         second.start();
         second.join();
         Iterator<Integer> iterator = list.iterator();
-        Thread third = new Thread(() -> list.add(3));
+        Thread third = new Thread(() -> {
+            list.add(3);
+            latch.countDown();
+        });
         third.start();
         third.join();
+        latch.await();
         assertThat(iterator.next(), is(1));
         assertThat(iterator.next(), is(2));
         assertThat(iterator.hasNext(), is(false));
